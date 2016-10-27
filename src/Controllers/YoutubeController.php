@@ -73,9 +73,9 @@ class YoutubeController extends BaseController
     /* @var $response Response */
     /* @var $youtubeResponse ResponseInterface */
     $ids                =   $request->getParam('ids');
-    $youtubeResponse  =   $this->curl->request('GET', 'search', [
+    $youtubeResponse  =   $this->curl->request('GET', 'videos', [
       'query'=>[
-        'part' => 'contentDetails,player',
+        'part' => 'contentDetails, player',
         'id' => $ids,
         'key'=> self::KEY
       ]

@@ -4,34 +4,41 @@
   <meta charset="utf-8"/>
   <title>Slim 3</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.css" />
-  <link href='//fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <style>
     .hide{
       display: none;
     }
-    .youtube-action img{
-      width: 300px;
-    }
   </style>
 </head>
 <body>
-
-<div id="player"></div>
-<div id="search">
-  <input type="text" class="input-search" /> <button type="button" class="btn-search">search</button>
-</div>
-<div id="results">
-  <pre></pre>
-  <div id="youtube-results"></div>
-  <div >
-    <button id="btn-next-youtube-results">NEXT PAGE</button>
+<div class="container-fluid">
+<div class="text-center">
+  <div id="player"></div>
+  <div id="search">
+    <input type="text" class="input-search" /> <button type="button" class="btn-search">search</button>
   </div>
 </div>
-<div id="partials" class="hide">
-  <div class="youtube-action">
-    <img src="" class="img-thumb"/>
-    <button class="btn btn-default btn-play" type="button" data-id=""> play </button>
-    <span class="span-title"> some title</span>
+  <div id="results">
+    <pre></pre>
+    <div id="youtube-results" class="row"></div>
+    <div >
+      <button id="btn-next-youtube-results">NEXT PAGE</button>
+    </div>
+  </div>
+  <div id="partials" class="hide">
+    <div class="youtube-action col-md-4 col-sd-6">
+      <div class="thumbnail">
+        <img src="" class="img-thumb img-responsive"/>
+        <div class="caption">
+          <p class="span-title"> some title</p>
+          <p><span class="span-time label label-default">0</span> </p>
+          <p>
+            <button class="btn btn-default btn-play" type="button" data-id=""> play </button>
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -39,7 +46,7 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.js"></script>
-
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 
 <script>
@@ -101,7 +108,37 @@
 
     });
   }
+  function searchVideoInfo(videoId,$objView){
+    var request  = $.ajax({
+      url: './api/youtube/search/video',
+      data: {
+        ids: videoId,
+      }
+    });
+    request.done(function (data, textStatus, jqXHR ) {
+      $('#results pre').JSONView(data, { collapsed: true });
+      console.log(data)
+      console.log(data.items[0].contentDetails.duration)
+      var reptms = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/;
+      var hours = 0, minutes = 0, seconds = 0, totalseconds;
 
+      if (reptms.test(data.items[0].contentDetails.duration)) {
+        var matches = reptms.exec(data.items[0].contentDetails.duration);
+        if (matches[1]) hours = Number(matches[1]);
+        if (matches[2]) minutes = Number(matches[2]);
+        if (matches[3]) seconds = Number(matches[3]);
+        totalseconds = hours * 3600  + minutes * 60 + seconds;
+        $objView.find('.span-time').html(totalseconds + " sec");
+      }
+
+    });
+    request.fail(function (jqXHR, textStatus, errorThrown) {
+
+    });
+    request.always(function( data, textStatus, jqXHR ) {
+
+    });
+  }
 
   function nextPageBtn(e){
     searchVideoNextPage($(this).attr('data-id'));
@@ -114,15 +151,16 @@
 
   }
 
-function renderVideoList(items){
-  for(item in items){
-    var $partial = $('#partials .youtube-action').clone();
-    $partial.find('button').attr('data-id',items[item].id.videoId);
-    $partial.find('.span-title').html(items[item].snippet.title);
-    $partial.find('.img-thumb').attr('src',items[item].snippet.thumbnails.high.url);
-    $('#youtube-results').append($partial);
+  function renderVideoList(items){
+    for(item in items){
+      var $partial = $('#partials .youtube-action').clone();
+      $partial.find('button').attr('data-id',items[item].id.videoId);
+      $partial.find('.span-title').html(items[item].snippet.title);
+      $partial.find('.img-thumb').attr('src',items[item].snippet.thumbnails.high.url);
+      $('#youtube-results').append($partial);
+      searchVideoInfo(items[item].id.videoId,$partial);
+    }
   }
-}
 
 
   // 2. This code loads the IFrame Player API code asynchronously.
