@@ -1,26 +1,28 @@
-# Slim Framework 3 Skeleton Application
+# Youtube API - PHP - Slim3 Framework
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application. This application uses the latest Slim 3 with the PHP-View template renderer. It also uses the Monolog logger.
-
-This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
+Search for videos, get there information.
 
 ## Install the Application
 
-Run this command from the directory in which you want to install your new Slim Framework application.
+Clone de repository 
 
-    php composer.phar create-project slim/slim-skeleton [my-app-name]
+    git clone URL-OF-REPOSITORY
 
-Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
+Install PHP dependencies (install composer first)
 
-* Point your virtual host document root to your new application's `public/` directory.
-* Ensure `logs/` is web writeable.
+    composer install
+
+or
+
+    php composer.phar install
 
 To run the application in development, you can also run this command. 
 
+	composer start
+
+or
+
 	php composer.phar start
 
-Run this command to run the test suite
-
-	php composer.phar test
 
 That's it! Now go build something cool.

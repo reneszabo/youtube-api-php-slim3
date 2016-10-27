@@ -1,5 +1,5 @@
 {
-    "name": "slim/slim-skeleton",
+    "name": "humber/youtube-api-php-slim3",
     "description": "A Slim Framework skeleton application for rapid development",
     "keywords": ["microframework", "rest", "router", "psr7"],
     "homepage": "http://github.com/slimphp/Slim-Skeleton",
