@@ -34,12 +34,14 @@ class YoutubeController extends BaseController
    * @return Response
    */
   public function search($request, $response, $args){
-    $q                =   $request->getParam('q','humber');
+    $q                =   $request->getParam('q','haiku');
+    $q.= ' haiku';
     $limit            =   $request->getParam('limit',20);
     $youtubeResponse  =   $this->curl->request('GET', 'search', [
       'query'=>[
         'part' => 'snippet',
         'type' => 'video',
+        'order' => 'date',
         'q' => $q,
         'maxResults' => $limit,
         'videoDuration' => 'short',
@@ -52,13 +54,15 @@ class YoutubeController extends BaseController
     /* @var $request Request */
     /* @var $response Response */
     /* @var $youtubeResponse ResponseInterface */
-    $q                =   $request->getParam('q');
+    $q                =   $request->getParam('q','haiku');
+    $q.= ' haiku';
     $token            =   $request->getParam('pageToken');
     $limit            =   $request->getParam('limit',20);
     $youtubeResponse  =   $this->curl->request('GET', 'search', [
       'query'=>[
         'part' => 'snippet',
         'type' => 'video',
+        'order' => 'date',
         'pageToken' => $token,
         'q' => $q,
         'maxResults' => $limit,
