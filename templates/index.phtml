@@ -27,7 +27,7 @@
     </div>
   </div>
   <div id="partials" class="hide">
-    <div class="youtube-action col-md-4 col-sd-6">
+    <div class="youtube-action col-md-4 col-sm-6">
       <div class="thumbnail">
         <img src="" class="img-thumb img-responsive"/>
         <div class="caption">
@@ -117,8 +117,6 @@
     });
     request.done(function (data, textStatus, jqXHR ) {
       $('#results pre').JSONView(data, { collapsed: true });
-      console.log(data)
-      console.log(data.items[0].contentDetails.duration)
       var reptms = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/;
       var hours = 0, minutes = 0, seconds = 0, totalseconds;
 
@@ -129,6 +127,10 @@
         if (matches[3]) seconds = Number(matches[3]);
         totalseconds = hours * 3600  + minutes * 60 + seconds;
         $objView.find('.span-time').html(totalseconds + " sec");
+        if(totalseconds>20){
+          console.log('remove');
+          $objView.remove();
+        }
       }
 
     });
