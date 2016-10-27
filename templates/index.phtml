@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Slim 3</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.css" />
+  <link href='//fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+  <style>
+    .hide{
+      display: none;
+    }
+    .youtube-action img{
+      width: 300px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="player"></div>
+<div id="search">
+  <input type="text" class="input-search" /> <button type="button" class="btn-search">search</button>
+</div>
+<div id="results">
+  <pre></pre>
+  <div id="youtube-results"></div>
+  <div >
+    <button id="btn-next-youtube-results">NEXT PAGE</button>
+  </div>
+</div>
+<div id="partials" class="hide">
+  <div class="youtube-action">
+    <img src="" class="img-thumb"/>
+    <button class="btn btn-default btn-play" type="button" data-id=""> play </button>
+    <span class="span-title"> some title</span>
+  </div>
+</div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.js"></script>
+
+
+
+<script>
+  var searchForString = "";
+  $(function(){
+    searchVideo('humber');
+  });
+
+  $(document).on('click','.btn-search'  , searchInputVideo);
+  $(document).on('click','.btn-play'    , playVideo);
+  $(document).on('click','#btn-next-youtube-results',nextPageBtn)
+  function playVideo(){
+    var code = $(this).attr('data-id');
+    console.log(code);
+    done = false;
+    player.loadVideoById(code);
+  }
+  function searchInputVideo(e){
+    searchVideo( $('.input-search').val());
+    $('.input-search').val('');
+  }
+  function searchVideo(search){
+    searchForString = search;
+    var request  = $.ajax({
+      url: './api/youtube/search',
+      data: { q: searchForString }
+    });
+    request.done(function (data, textStatus, jqXHR ) {
+      $('#results pre').JSONView(data, { collapsed: true });
+      $('#youtube-results').html('');
+      renderVideoList(data.items);
+      setNextPageButton(data.nextPageToken);
+    });
+    request.fail(function (jqXHR, textStatus, errorThrown) {
+
+    });
+    request.always(function( data, textStatus, jqXHR ) {
+
+    });
+  }
+
+  function searchVideoNextPage(pageId){
+    var request  = $.ajax({
+      url: './api/youtube/search/page',
+      data: {
+        pageToken: pageId,
+        q: searchForString
+      }
+    });
+    request.done(function (data, textStatus, jqXHR ) {
+      $('#results pre').JSONView(data, { collapsed: true });
+      renderVideoList(data.items);
+      setNextPageButton(data.nextPageToken);
+    });
+    request.fail(function (jqXHR, textStatus, errorThrown) {
+
+    });
+    request.always(function( data, textStatus, jqXHR ) {
+
+    });
+  }
+
+
+  function nextPageBtn(e){
+    searchVideoNextPage($(this).attr('data-id'));
+  }
+
+
+  function setNextPageButton(pageHash){
+    $('#btn-next-youtube-results').attr('data-id', pageHash);
+    $('#btn-next-youtube-results').removeClass('hide');
+
+  }
+
+function renderVideoList(items){
+  for(item in items){
+    var $partial = $('#partials .youtube-action').clone();
+    $partial.find('button').attr('data-id',items[item].id.videoId);
+    $partial.find('.span-title').html(items[item].snippet.title);
+    $partial.find('.img-thumb').attr('src',items[item].snippet.thumbnails.high.url);
+    $('#youtube-results').append($partial);
+  }
+}
+
+
+  // 2. This code loads the IFrame Player API code asynchronously.
+  var tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  // 3. This function creates an <iframe> (and YouTube player)
+  //    after the API code downloads.
+  var player;
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      height: '390',
+      width: '640',
+      events: {
+        'onReady': onPlayerReady,
+        'onStateChange': onPlayerStateChange
+      }
+    });
+  }
+
+  // 4. The API will call this function when the video player is ready.
+  function onPlayerReady(event) {
+    event.target.playVideo();
+  }
+
+  // 5. The API calls this function when the player's state changes.
+  function onPlayerStateChange(event) {
+  }
+</script>
+</body>
+</html>
