@@ -6,24 +6,21 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.css" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <style>
-    .hide{
-      display: none;
-    }
   </style>
 </head>
 <body>
 <div class="container-fluid">
-<div class="text-center">
-  <div id="player"></div>
-  <div id="search">
-    <input type="text" class="input-search" /> <button type="button" class="btn-search">search</button>
+  <div class="text-center">
+    <div id="player"></div>
+    <div id="search">
+      <input type="text" class="input-search " /> <button type="button" class="btn-search ">search</button>
+    </div>
   </div>
-</div>
   <div id="results">
     <pre></pre>
     <div id="youtube-results" class="row"></div>
     <div >
-      <button id="btn-next-youtube-results">NEXT PAGE</button>
+      <button id="btn-next-youtube-results" class="btn btn-primary">NEXT PAGE</button>
     </div>
   </div>
   <div id="partials" class="hide">
@@ -128,7 +125,6 @@
         totalseconds = hours * 3600  + minutes * 60 + seconds;
         $objView.find('.span-time').html(totalseconds + " sec");
         if(totalseconds>20){
-          console.log('remove');
           $objView.remove();
         }
       }
@@ -154,13 +150,22 @@
   }
 
   function renderVideoList(items){
-    for(item in items){
-      var $partial = $('#partials .youtube-action').clone();
-      $partial.find('button').attr('data-id',items[item].id.videoId);
-      $partial.find('.span-title').html(items[item].snippet.title);
-      $partial.find('.img-thumb').attr('src',items[item].snippet.thumbnails.high.url);
-      $('#youtube-results').append($partial);
-      searchVideoInfo(items[item].id.videoId,$partial);
+    console.log(items.length);
+    if(items.length > 0){
+      $('#btn-next-youtube-results').removeClass('hidden');
+    console.log("here");
+      for(item in items){
+        var $partial = $('#partials .youtube-action').clone();
+        $partial.find('button').attr('data-id',items[item].id.videoId);
+        $partial.find('.span-title').html(items[item].snippet.title);
+        $partial.find('.img-thumb').attr('src',items[item].snippet.thumbnails.high.url);
+        $('#youtube-results').append($partial);
+        searchVideoInfo(items[item].id.videoId,$partial);
+      }
+      $('#btn-next-youtube-results').trigger('click');
+    }else{
+    console.log("there");
+      $('#btn-next-youtube-results').addClass('hidden');
     }
   }
 
