@@ -3,7 +3,7 @@
 
 $container = $app->getContainer();
 
-// view renderer
+// View renderer
 $container['renderer'] = function ($c) {
   $settings = $c->get('settings')['renderer'];
   return new Slim\Views\PhpRenderer($settings['template_path']);
@@ -14,7 +14,7 @@ $container['flash'] = function () {
   return new \Slim\Flash\Messages();
 };
 
-// monolog
+// Monolog
 $container['logger'] = function ($c) {
   $settings = $c->get('settings')['logger'];
   $logger = new Monolog\Logger($settings['name']);
@@ -23,13 +23,7 @@ $container['logger'] = function ($c) {
   return $logger;
 };
 
-//Guzzle HTTP client
-/* return GuzzleHttp\Client */
-//$container['curl'] = function() {
-//  $guzzle = new \GuzzleHttp\Client();
-//  return $guzzle;
-//};
-//controllers
+// Controllers
 
 $container['YoutubeController'] = function($container){
   return new \Humber\Controllers\YoutubeController($container);

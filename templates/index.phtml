@@ -5,63 +5,128 @@
   <title>Slim 3</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.css" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.6/components/sidebar.min.css" />
   <style>
+    html, body, #main, .embed-responsive, iframe {
+      height: 100vh;
+    }
+    .embed-responsive{
+      padding-bottom: 0; /* REMOVE SCROLL DOWN */
+    }
+    .menu-btn{
+      width: 20px;
+      height: 20px;
+      background: red;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+    }
+    .menu{
+      background: linear-gradient(to bottom, rgba(0,0,0,0.85) 20%, rgba(0,0,0,0.75) 100%, transparent);
+      display: flex;
+      flex-direction: column;
+    }
+    .ui[class*="very wide"]{
+      /*width: 100vw !important;*/
+    }
+    .span-title{
+      color: white;
+    }
+    .side-header{
+      order:1;
+      height: 59px;
+      position: relative;
+      background: yellow;
+
+    }
+    .side-content{
+      background: blue;
+      order:2;
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: scroll;
+      height: 100%;
+    }
+    .side-footer{
+      background: red;
+      order:3;
+      position: relative;
+      height: 59px;
+    }
   </style>
 </head>
 <body>
-<div class="container-fluid">
-  <div class="text-center">
+
+
+<aside class="ui right very wide  vertical menu sidebar">
+  <div class="side-header">
+    <input type="text" class="input-search " /> <button type="button" class="btn-search ">search</button>
+  </div>
+  <div class="side-content">
+    <div id="youtube-results"></div>
+  </div>
+  <div class="side-footer">
+  </div>
+</aside>
+<main id="main" class="pusher dimmed" >
+  <div class="embed-responsive embed-responsive-16by9">
     <div id="player"></div>
-    <div id="search">
-      <input type="text" class="input-search " /> <button type="button" class="btn-search ">search</button>
-    </div>
   </div>
-  <div id="results">
-    <pre></pre>
-    <div id="youtube-results" class="row"></div>
-    <div >
-      <button id="btn-next-youtube-results" class="btn btn-primary">NEXT PAGE</button>
-    </div>
-  </div>
-  <div id="partials" class="hide">
-    <div class="youtube-action col-md-4 col-sm-6">
-      <div class="thumbnail">
+</main>
+<div class="menu-btn">
+</div>
+<div id="partials" class="hide">
+  <div class="youtube-action container-fluid">
+    <div class="row">
+      <div class="col-xs-4">
         <img src="" class="img-thumb img-responsive"/>
-        <div class="caption">
-          <p class="span-title"> some title</p>
-          <p><span class="span-time label label-default">0</span> </p>
-          <p>
-            <button class="btn btn-default btn-play" type="button" data-id=""> play </button>
-          </p>
-        </div>
+      </div>
+      <div class="col-xs-8">
+        <p class="span-title"> some title</p>
+        <p><span class="span-time label label-default">0</span> </p>
+        <p>
+          <button class="btn btn-default btn-play" type="button" data-id=""> play </button>
+        </p>
       </div>
     </div>
   </div>
 </div>
-
-
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.2/lodash.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.6/components/sidebar.js"></script>
 
 <script>
-  var searchForString = "";
-  $(function(){
-    searchVideo('humber');
+  $('.ui.sidebar').sidebar({
+    // Overlay will mean the sidebar sits on top of your content
+    transition: 'overlay',
+    onVisible: function(){
+      console.log('Visible');
+    },
+    onHide: function(){
+      console.log('Hide');
+    }
   });
+
+
+  $(document).on('click', '.menu-btn',function(){
+    $('.ui.sidebar')
+      .sidebar('toggle');
+  });
+
+  var videosArray;
+  var searchForString = "";
 
   $(document).on('click','.btn-search'  , searchInputVideo);
   $(document).on('click','.btn-play'    , playVideo);
-  $(document).on('click','#btn-next-youtube-results',nextPageBtn)
   function playVideo(){
     var code = $(this).attr('data-id');
-    console.log(code);
     done = false;
     player.loadVideoById(code);
   }
   function searchInputVideo(e){
+    videosArray = [];
     searchVideo( $('.input-search').val());
     $('.input-search').val('');
   }
@@ -72,10 +137,8 @@
       data: { q: searchForString }
     });
     request.done(function (data, textStatus, jqXHR ) {
-      $('#results pre').JSONView(data, { collapsed: true });
-      $('#youtube-results').html('');
       renderVideoList(data.items);
-      setNextPageButton(data.nextPageToken);
+//      setNextPageButton(data.nextPageToken);
     });
     request.fail(function (jqXHR, textStatus, errorThrown) {
 
@@ -94,9 +157,8 @@
       }
     });
     request.done(function (data, textStatus, jqXHR ) {
-      $('#results pre').JSONView(data, { collapsed: true });
       renderVideoList(data.items);
-      setNextPageButton(data.nextPageToken);
+//      setNextPageButton(data.nextPageToken);
     });
     request.fail(function (jqXHR, textStatus, errorThrown) {
 
@@ -113,19 +175,25 @@
       }
     });
     request.done(function (data, textStatus, jqXHR ) {
-      $('#results pre').JSONView(data, { collapsed: true });
       var reptms = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/;
       var hours = 0, minutes = 0, seconds = 0, totalseconds;
-
+      console.log(data);
       if (reptms.test(data.items[0].contentDetails.duration)) {
         var matches = reptms.exec(data.items[0].contentDetails.duration);
         if (matches[1]) hours = Number(matches[1]);
         if (matches[2]) minutes = Number(matches[2]);
         if (matches[3]) seconds = Number(matches[3]);
         totalseconds = hours * 3600  + minutes * 60 + seconds;
-        $objView.find('.span-time').html(totalseconds + " sec");
+//        $objView.find('.span-time').html(totalseconds + " sec");
         if(totalseconds>20){
-          $objView.remove();
+          _.remove(videosArray, function(o) { return o.id.videoId == videoId; });
+        }else{
+          var $partial = $('#partials .youtube-action').clone();
+          $partial.find('button').attr('data-id',data.items[0].id);
+          $partial.find('.span-title').html(data.items[0].snippet.title);
+          $partial.find('.img-thumb').attr('src',data.items[0].snippet.thumbnails.high.url);
+          $partial.find('.span-time').html(totalseconds + " sec");
+          $('#youtube-results').append($partial);
         }
       }
 
@@ -152,19 +220,18 @@
   function renderVideoList(items){
     console.log(items.length);
     if(items.length > 0){
-      $('#btn-next-youtube-results').removeClass('hidden');
-    console.log("here");
+//      $('#btn-next-youtube-results').removeClass('hidden');
       for(item in items){
-        var $partial = $('#partials .youtube-action').clone();
-        $partial.find('button').attr('data-id',items[item].id.videoId);
-        $partial.find('.span-title').html(items[item].snippet.title);
-        $partial.find('.img-thumb').attr('src',items[item].snippet.thumbnails.high.url);
-        $('#youtube-results').append($partial);
-        searchVideoInfo(items[item].id.videoId,$partial);
+
+        var o = _.find(videosArray, function(o) { return o.id.videoId == items[item].id.videoId; })
+        if(o == undefined ){
+          videosArray.push(items[item]);
+          searchVideoInfo(items[item].id.videoId,null);
+        }
       }
       $('#btn-next-youtube-results').trigger('click');
     }else{
-    console.log("there");
+      console.log("there");
       $('#btn-next-youtube-results').addClass('hidden');
     }
   }
@@ -181,8 +248,10 @@
   var player;
   function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
-      height: '390',
-      width: '640',
+      videoId : 'zpOULjyy-n8',
+      playerVars: {
+        'color': 'white', 'autoplay': 0, 'controls': 0, 'rel': 0, 'showinfo': 0
+      },
       events: {
         'onReady': onPlayerReady,
         'onStateChange': onPlayerStateChange
@@ -192,11 +261,12 @@
 
   // 4. The API will call this function when the video player is ready.
   function onPlayerReady(event) {
-    event.target.playVideo();
+    console.log('ready to play video');
   }
 
   // 5. The API calls this function when the player's state changes.
   function onPlayerStateChange(event) {
+    console.log('status change on video');
   }
 </script>
 </body>

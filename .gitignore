@@ -5,3 +5,4 @@
 nbproject/
 /cache/*
 !/cache/README.md
+/node_modules/
