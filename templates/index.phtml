@@ -37,11 +37,11 @@
       order:1;
       height: 59px;
       position: relative;
-      background: yellow;
+      /*background: yellow;*/
 
     }
     .side-content{
-      background: blue;
+      /*background: blue;*/
       order:2;
       position: relative;
       overflow-x: hidden;
@@ -49,7 +49,7 @@
       height: 100%;
     }
     .side-footer{
-      background: red;
+      /*background: red;*/
       order:3;
       position: relative;
       height: 59px;
@@ -67,6 +67,8 @@
     <div id="youtube-results"></div>
   </div>
   <div class="side-footer">
+    <button id="btn-next-youtube-results" class="hide">INSPECT NEXT PAGE</button>
+    <button id="btn-clear-youtube-results" >CLEAR ALL</button>
   </div>
 </aside>
 <main id="main" class="pusher dimmed" >
@@ -99,7 +101,6 @@
 
 <script>
   $('.ui.sidebar').sidebar({
-    // Overlay will mean the sidebar sits on top of your content
     transition: 'overlay',
     onVisible: function(){
       console.log('Visible');
@@ -108,25 +109,27 @@
       console.log('Hide');
     }
   });
-
-
   $(document).on('click', '.menu-btn',function(){
     $('.ui.sidebar')
       .sidebar('toggle');
   });
-
-  var videosArray;
+  var videosArray= [];
   var searchForString = "";
-
   $(document).on('click','.btn-search'  , searchInputVideo);
   $(document).on('click','.btn-play'    , playVideo);
+  $(document).on('click','#btn-next-youtube-results' , nextPageBtn);
+  $(document).on('click','#btn-clear-youtube-results' , clearAll);
+  function clearAll(){
+    $('#youtube-results').html('');
+    videosArray = [];
+  }
   function playVideo(){
     var code = $(this).attr('data-id');
     done = false;
     player.loadVideoById(code);
   }
   function searchInputVideo(e){
-    videosArray = [];
+//    videosArray = [];
     searchVideo( $('.input-search').val());
     $('.input-search').val('');
   }
@@ -138,7 +141,7 @@
     });
     request.done(function (data, textStatus, jqXHR ) {
       renderVideoList(data.items);
-//      setNextPageButton(data.nextPageToken);
+      setNextPageButton(data.nextPageToken);
     });
     request.fail(function (jqXHR, textStatus, errorThrown) {
 
@@ -147,7 +150,6 @@
 
     });
   }
-
   function searchVideoNextPage(pageId){
     var request  = $.ajax({
       url: './api/youtube/search/page',
@@ -158,7 +160,8 @@
     });
     request.done(function (data, textStatus, jqXHR ) {
       renderVideoList(data.items);
-//      setNextPageButton(data.nextPageToken);
+      console.log(data.nextPageToken);
+      setNextPageButton(data.nextPageToken);
     });
     request.fail(function (jqXHR, textStatus, errorThrown) {
 
@@ -184,7 +187,6 @@
         if (matches[2]) minutes = Number(matches[2]);
         if (matches[3]) seconds = Number(matches[3]);
         totalseconds = hours * 3600  + minutes * 60 + seconds;
-//        $objView.find('.span-time').html(totalseconds + " sec");
         if(totalseconds>20){
           _.remove(videosArray, function(o) { return o.id.videoId == videoId; });
         }else{
@@ -229,7 +231,7 @@
           searchVideoInfo(items[item].id.videoId,null);
         }
       }
-      $('#btn-next-youtube-results').trigger('click');
+//      $('#btn-next-youtube-results').trigger('click');
     }else{
       console.log("there");
       $('#btn-next-youtube-results').addClass('hidden');
