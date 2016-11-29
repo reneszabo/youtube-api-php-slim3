@@ -23,7 +23,7 @@
       z-index: 2;
     }
     .menu{
-      background: linear-gradient(to bottom, rgba(0,0,0,0.85) 20%, rgba(0,0,0,0.75) 100%, transparent);
+      background: white;
       display: flex;
       flex-direction: column;
     }
@@ -31,14 +31,65 @@
       /*width: 100vw !important;*/
     }
     .span-title{
-      color: white;
+      font-weight: bold;
+      color: black;
     }
     .side-header{
       order:1;
       height: 59px;
-      position: relative;
-      /*background: yellow;*/
-
+      position: absolute;
+      background: black;
+      z-index: 50;
+    }
+    .label {
+      background: #e57373!important;
+    }
+    /*.input-search{
+       width: 100%;
+     }
+     */
+    .col-md-6{
+      width: 100%;
+    }
+    .col-xs-4 {
+      max-width: 200px;
+    }
+    .col-xs-4, .col-xs-8{
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    .col-xs-8 > p:nth-child(2), .span-title {
+      display: inline;
+    }
+    .col-xs-8 > p:nth-child(4) {
+      margin-bottom: 0;
+      margin-top: 15px;
+    }
+    .btn-info{
+      background-color: #f44336;
+      border-color: #f44336;
+      transition: all 0.3s ease-out;
+    }
+    .btn-info:hover {
+      background-color: #d32f2f;
+    }
+    i{
+      opacity: 0.8;
+      transition: all 0.2s ease;
+    }
+    .btn-info:hover i{
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    .btn{
+      padding: 12px 12px;
+    }
+    #youtube-results > div:nth-child(1) > div > div.col-xs-8 > p:nth-child(4){}
+    .youtube-action:nth-child(odd) {
+      background: #eee;
+    }
+    .youtube-action:nth-child(even){
+      background: #f5f5f5;
     }
     .side-content{
       /*background: blue;*/
@@ -48,35 +99,101 @@
       overflow-y: scroll;
       height: 100%;
     }
+    .side-content::-webkit-scrollbar{
+      display:none;
+    }
     .side-footer{
       /*background: red;*/
       order:3;
       position: relative;
-      height: 59px;
+      height: 80px;
+      text-align: center;
     }
+    .side-footer > button {
+      background: none!important;
+      font: inherit;
+      font-size: 1.1em;
+      border:none!important;
+      padding: 20px 30px!important;
+      color: #e91e63!important;
+      transition: all 0.2s ease-out;
+    }
+    .side-footer > button:focus {
+      outline: none!important;
+    }
+    .side-footer > button:active {
+      font-size: 0.9em;
+    }
+    .side-footer > button:hover {
+      transform: scale(1.1);
+    }
+    p > button {
+      background: none!important;
+      font: inherit;
+      padding: 5px 30px!important;
+      border: 2px solid #f44336!important;
+      color: #e91e63!important;
+      transition: all 0.3s ease-out;
+    }
+    p > button:focus {
+      outline: none!important;
+    }
+    p > button:hover {
+      color: white!important;
+      background: #f44336!important;
+    }
+    p > button:active {
+      transform: scale(0.9);
+    }
+
+    #search{
+      border-radius: 0;
+      opacity: 0;
+      transition: opacity 0.3s ease-out;
+    }
+    #search:focus{
+      opacity: 1;
+
+    }
+    #btn{
+      border-radius: 0;
+    }
+
   </style>
 </head>
 <body>
 
-
-<aside class="ui right very wide  vertical menu sidebar">
-  <div class="side-header">
-    <input type="text" class="input-search " /> <button type="button" class="btn-search ">search</button>
-  </div>
+<aside class="ui bottom very wide vertical menu sidebar" style="height:500px!important;">
   <div class="side-content">
     <div id="youtube-results"></div>
   </div>
   <div class="side-footer">
-    <button id="btn-next-youtube-results" class="hide">INSPECT NEXT PAGE</button>
-    <button id="btn-clear-youtube-results" >CLEAR ALL</button>
+    <button id="btn-next-youtube-results" class="hide">More Haikus ↓</button>
+    <button id="btn-clear-youtube-results" >Clear Results</button>
   </div>
 </aside>
-<main id="main" class="pusher dimmed" >
+
+<div class="side-header">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="input-group col-md-12">
+        <input type="text" class="form-control input-lg input-search" id="search" placeholder = "Search" />
+        <span class="input-group-btn">
+        <button class="btn btn-info btn-lg, btn-search" id="btn" type="button">
+          <i class="glyphicon glyphicon-search"></i>
+      </div>
+    </div>
+  </div>
+  <!--<button type="button" class="btn-search" style="display: none" id="btn">search</button>-->
+</div>
+
+
+<main id="main" class="pusher">
   <div class="embed-responsive embed-responsive-16by9">
     <div id="player"></div>
   </div>
 </main>
-<div class="menu-btn">
+<!--<div class="menu-btn">-->
 </div>
 <div id="partials" class="hide">
   <div class="youtube-action container-fluid">
@@ -88,7 +205,10 @@
         <p class="span-title"> some title</p>
         <p><span class="span-time label label-default">0</span> </p>
         <p>
-          <button class="btn btn-default btn-play" type="button" data-id=""> play </button>
+          <a target="_blank" class="span-descr">some channel</a>
+        </p>
+        <p>
+          <button class="btn btn-default btn-play" type="button" data-id=""> Watch </button>
         </p>
       </div>
     </div>
@@ -100,18 +220,30 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.6/components/sidebar.js"></script>
 
 <script>
-  $('.ui.sidebar').sidebar({
-    transition: 'overlay',
-    onVisible: function(){
-      console.log('Visible');
-    },
-    onHide: function(){
-      console.log('Hide');
+  playerStatus = 0;
+  $('#btn').on('mouseover', function(){
+    $("#search").focus();
+  });
+  $("#search").keyup(function(event){
+    if(event.keyCode == 13){
+      $("#btn").click();
     }
   });
-  $(document).on('click', '.menu-btn',function(){
+
+  $('.ui.sidebar').sidebar({
+    transition: 'scale down',
+    onVisible: function(){
+    },
+    onHide: function(){
+      if(playerStatus === 2){
+      player.playVideo();
+      }
+    }
+  });
+  $(document).on('click', '.btn-search',function(){
     $('.ui.sidebar')
-      .sidebar('toggle');
+      .sidebar('show');
+    clearAll();
   });
   var videosArray= [];
   var searchForString = "";
@@ -126,6 +258,8 @@
   function playVideo(){
     var code = $(this).attr('data-id');
     done = false;
+    $('.ui.sidebar')
+      .sidebar('toggle');
     player.loadVideoById(code);
   }
   function searchInputVideo(e){
@@ -160,7 +294,6 @@
     });
     request.done(function (data, textStatus, jqXHR ) {
       renderVideoList(data.items);
-      console.log(data.nextPageToken);
       setNextPageButton(data.nextPageToken);
     });
     request.fail(function (jqXHR, textStatus, errorThrown) {
@@ -180,7 +313,6 @@
     request.done(function (data, textStatus, jqXHR ) {
       var reptms = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/;
       var hours = 0, minutes = 0, seconds = 0, totalseconds;
-      console.log(data);
       if (reptms.test(data.items[0].contentDetails.duration)) {
         var matches = reptms.exec(data.items[0].contentDetails.duration);
         if (matches[1]) hours = Number(matches[1]);
@@ -193,6 +325,8 @@
           var $partial = $('#partials .youtube-action').clone();
           $partial.find('button').attr('data-id',data.items[0].id);
           $partial.find('.span-title').html(data.items[0].snippet.title);
+          $partial.find('.span-descr').html(data.items[0].snippet.channelTitle);
+          $partial.find('.span-descr').attr('href', "//youtube.com/channel/"+data.items[0].snippet.channelId);
           $partial.find('.img-thumb').attr('src',data.items[0].snippet.thumbnails.high.url);
           $partial.find('.span-time').html(totalseconds + " sec");
           $('#youtube-results').append($partial);
@@ -220,7 +354,6 @@
   }
 
   function renderVideoList(items){
-    console.log(items.length);
     if(items.length > 0){
 //      $('#btn-next-youtube-results').removeClass('hidden');
       for(item in items){
@@ -233,7 +366,6 @@
       }
 //      $('#btn-next-youtube-results').trigger('click');
     }else{
-      console.log("there");
       $('#btn-next-youtube-results').addClass('hidden');
     }
   }
@@ -250,9 +382,9 @@
   var player;
   function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
-      videoId : 'zpOULjyy-n8',
+      videoId : 'XjrC_jv7xHA',
       playerVars: {
-        'color': 'white', 'autoplay': 0, 'controls': 0, 'rel': 0, 'showinfo': 0
+        'color': 'white', 'autoplay': 0, 'controls': 1, 'rel': 0, 'showinfo': 0
       },
       events: {
         'onReady': onPlayerReady,
@@ -260,15 +392,20 @@
       }
     });
   }
-
   // 4. The API will call this function when the video player is ready.
   function onPlayerReady(event) {
-    console.log('ready to play video');
   }
 
   // 5. The API calls this function when the player's state changes.
   function onPlayerStateChange(event) {
-    console.log('status change on video');
+    playerStatus = event.data;
+    if(event.data === 0 || event.data === 2 ){
+      if($('#youtube-results').children().length>0){
+        $('.ui.sidebar').sidebar('show');
+      }else{
+        $('#search').focus();
+      }
+    }
   }
 </script>
 </body>
